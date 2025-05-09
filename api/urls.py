@@ -15,6 +15,7 @@ urlpatterns = [
     path('register/', RegisterView.as_view()),
     path('login/', CustomAuthToken.as_view()),
     path('user/', UserDetailView.as_view()),
+    path('user/stats/', UserStatsView.as_view(), name='user-stats'),
     path('logout/', LogoutView.as_view()),
     path('wastelogs/add/', WasteLogViewSet.as_view({'post': 'add_waste'}), name='add-waste'),
     # path('donations/bulk-native/', BulkDonationNativeView.as_view(), name='bulk-donation-native'),

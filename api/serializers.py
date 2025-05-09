@@ -4,10 +4,41 @@ from .models import *
 from datetime import date
 from django.db import transaction
 
+# class UserSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = User
+#         fields = ['id', 'username', 'email', 'first_name', 'last_name']
+
 class UserSerializer(serializers.ModelSerializer):
+    prefers_dark_mode = serializers.BooleanField(source='profile.prefers_dark_mode')
+
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'first_name', 'last_name']
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'prefers_dark_mode']
+        read_only_fields = ['id']
+
+    def update(self, instance, validated_data):
+        profile_data = validated_data.pop('profile', {})
+        prefers_dark_mode = profile_data.get('prefers_dark_mode', instance.profile.prefers_dark_mode)
+
+        # Update user fields
+        instance.username = validated_data.get('username', instance.username)
+        instance.email = validated_data.get('email', instance.email)
+        instance.first_name = validated_data.get('first_name', instance.first_name)
+        instance.last_name = validated_data.get('last_name', instance.last_name)
+        
+        # Update password if provided
+        password = validated_data.get('password')
+        if password:
+            instance.set_password(password)
+        
+        instance.save()
+
+        # Update profile
+        instance.profile.prefers_dark_mode = prefers_dark_mode
+        instance.profile.save()
+
+        return instance
 
 class FoodCategorySerializer(serializers.ModelSerializer):
     class Meta:

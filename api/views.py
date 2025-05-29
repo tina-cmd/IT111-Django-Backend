@@ -1,4 +1,4 @@
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, permissions, generics
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -160,12 +160,12 @@ class CustomAuthToken(ObtainAuthToken):
         token = Token.objects.get(key=response.data['token'])
         return Response({ 'id': token.user.id, 'token': token.key, 'username': token.user.username, 'email': token.user.email, 'first_name': token.user.first_name })
 
-class UserDetailView(APIView):
+class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    def get(self, request):
-        serializer = UserSerializer(request.user)
-        return Response(serializer.data)
+    def get_object(self):
+        return self.request.user
 
 class WasteLogViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]

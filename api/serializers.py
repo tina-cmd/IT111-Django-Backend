@@ -178,7 +178,7 @@ class MultiDonationSerializer(serializers.Serializer):
                 quantity=quantity
             )
             # Update the FoodLog status and available quantity (handled by save method)
-            food_log.quantity -= quantity
+            # food_log.quantity -= quantity
             food_log.save()
             donation_records.append(donation_record)
         
